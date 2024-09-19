@@ -39,18 +39,28 @@ public class RouteController {
   @GetMapping(value = "/retrieveDept", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> retrieveDepartment(@RequestParam(value = "deptCode") String deptCode) {
     try {
-      HashMap<String, Department> departmentMapping;
-      departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+      // Check if deptCode is null or empty
+      if (deptCode == null || deptCode.trim().isEmpty()) {
+        return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+      }
 
-      if (!departmentMapping.containsKey(deptCode.toUpperCase())) {
+      HashMap<String, Department> departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+
+      // Normalize deptCode to uppercase for consistent lookup
+      String normalizedDeptCode = deptCode.toUpperCase();
+
+      // Check if the department exists in the mapping
+      if (!departmentMapping.containsKey(normalizedDeptCode)) {
         return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
       } else {
-        return new ResponseEntity<>(departmentMapping.get(deptCode.toUpperCase()).toString(),
-            HttpStatus.OK);
+        // Assuming the Department class has a meaningful toString() method
+        Department department = departmentMapping.get(normalizedDeptCode);
+        return new ResponseEntity<>(department.toString(), HttpStatus.OK);
       }
 
     } catch (Exception e) {
-      return handleException(e);
+      // Return a more specific error message and status
+      return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -71,6 +81,11 @@ public class RouteController {
   @GetMapping(value = "/retrieveCourse", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> retrieveCourse(@RequestParam(value = "deptCode") String deptCode,
                                           @RequestParam(value = "courseCode") int courseCode) {
+
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesDepartmentExists = retrieveDepartment(deptCode).getStatusCode() == HttpStatus.OK;
       if (doesDepartmentExists) {
@@ -108,6 +123,11 @@ public class RouteController {
   @GetMapping(value = "/isCourseFull", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> isCourseFull(@RequestParam(value = "deptCode") String deptCode,
                                         @RequestParam(value = "courseCode") int courseCode) {
+
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
@@ -141,13 +161,15 @@ public class RouteController {
    */
   @GetMapping(value = "/getMajorCountFromDept", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> getMajorCtFromDept(@RequestParam(value = "deptCode") String deptCode) {
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesDepartmentExists = retrieveDepartment(deptCode).getStatusCode() == HttpStatus.OK;
       if (doesDepartmentExists) {
-        HashMap<String, Department> departmentMapping;
-        departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
-        return new ResponseEntity<>("There are: " + -departmentMapping.get(deptCode)
-            .getNumberOfMajors() + " majors in the department", HttpStatus.OK);
+        HashMap<String, Department> departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+        return new ResponseEntity<>("There are: " + departmentMapping.get(deptCode).getNumberOfMajors() + " majors in the department", HttpStatus.OK);
       }
       return new ResponseEntity<>("Department Not Found", HttpStatus.FORBIDDEN);
     } catch (Exception e) {
@@ -167,13 +189,16 @@ public class RouteController {
    */
   @GetMapping(value = "/idDeptChair", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> identifyDeptChair(@RequestParam(value = "deptCode") String deptCode) {
+
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesDepartmentExists = retrieveDepartment(deptCode).getStatusCode() == HttpStatus.OK;
       if (doesDepartmentExists) {
-        HashMap<String, Department> departmentMapping;
-        departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
-        return new ResponseEntity<>(departmentMapping.get(deptCode).getDepartmentChair() + " is "
-            + "the department chair.", HttpStatus.OK);
+        HashMap<String, Department> departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+        return new ResponseEntity<>(departmentMapping.get(deptCode).getDepartmentChair() + " is the department chair.", HttpStatus.OK);
       }
       return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
     } catch (Exception e) {
@@ -197,6 +222,11 @@ public class RouteController {
   @GetMapping(value = "/findCourseLocation", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> findCourseLocation(@RequestParam(value = "deptCode") String deptCode,
                                               @RequestParam(value = "courseCode") int courseCode) {
+
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
@@ -236,6 +266,10 @@ public class RouteController {
   public ResponseEntity<?> findCourseInstructor(@RequestParam(value = "deptCode") String deptCode,
                                                 @RequestParam(value = "courseCode")
                                                 int courseCode) {
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
@@ -275,6 +309,10 @@ public class RouteController {
   public ResponseEntity<?> findCourseTime(@RequestParam(value = "deptCode") String deptCode,
                                           @RequestParam(value = "courseCode")
                                           int courseCode) {
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
@@ -308,15 +346,19 @@ public class RouteController {
   @PatchMapping(value = "/addMajorToDept", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> addMajorToDept(@RequestParam(value = "deptCode") String deptCode) {
     try {
+      // Handle null or empty department code
+      if (deptCode == null || deptCode.trim().isEmpty()) {
+        return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+      }
+
       boolean doesDepartmentExists = retrieveDepartment(deptCode).getStatusCode() == HttpStatus.OK;
       if (doesDepartmentExists) {
-        HashMap<String, Department> departmentMapping;
-        departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
-
+        HashMap<String, Department> departmentMapping = IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
         Department specifiedDept = departmentMapping.get(deptCode);
         specifiedDept.addPersonToMajor();
         return new ResponseEntity<>("Attribute was updated successfully", HttpStatus.OK);
       }
+
       return new ResponseEntity<>("Department Not Found", HttpStatus.NOT_FOUND);
     } catch (Exception e) {
       return handleException(e);
@@ -334,6 +376,11 @@ public class RouteController {
    */
   @PatchMapping(value = "/removeMajorFromDept", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> removeMajorFromDept(@RequestParam(value = "deptCode") String deptCode) {
+
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesDepartmentExists = retrieveDepartment(deptCode).getStatusCode() == HttpStatus.OK;
       if (doesDepartmentExists) {
@@ -364,6 +411,11 @@ public class RouteController {
   @PatchMapping(value = "/dropStudentFromCourse", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> dropStudent(@RequestParam(value = "deptCode") String deptCode,
                                        @RequestParam(value = "courseCode") int courseCode) {
+
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
@@ -406,6 +458,11 @@ public class RouteController {
   public ResponseEntity<?> setEnrollmentCount(@RequestParam(value = "deptCode") String deptCode,
                                               @RequestParam(value = "courseCode") int courseCode,
                                               @RequestParam(value = "count") int count) {
+
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
@@ -443,6 +500,10 @@ public class RouteController {
   public ResponseEntity<?> changeCourseTime(@RequestParam(value = "deptCode") String deptCode,
                                             @RequestParam(value = "courseCode") int courseCode,
                                             @RequestParam(value = "time") String time) {
+
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
     try {
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
@@ -481,6 +542,11 @@ public class RouteController {
   public ResponseEntity<?> changeCourseTeacher(@RequestParam(value = "deptCode") String deptCode,
                                                @RequestParam(value = "courseCode") int courseCode,
                                                @RequestParam(value = "teacher") String teacher) {
+
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
@@ -520,6 +586,10 @@ public class RouteController {
   public ResponseEntity<?> changeCourseLocation(@RequestParam(value = "deptCode") String deptCode,
                                                 @RequestParam(value = "courseCode") int courseCode,
                                                 @RequestParam(value = "location") String location) {
+    if (deptCode == null || deptCode.trim().isEmpty()) {
+      return new ResponseEntity<>("Department code cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
     try {
       boolean doesCourseExists;
       doesCourseExists = retrieveCourse(deptCode, courseCode).getStatusCode() == HttpStatus.OK;
@@ -541,7 +611,7 @@ public class RouteController {
     }
   }
 
-  private ResponseEntity<?> handleException(Exception e) {
+  public ResponseEntity<?> handleException (Exception e) {
     System.out.println(e.toString());
     return new ResponseEntity<>("An Error has occurred", HttpStatus.OK);
   }

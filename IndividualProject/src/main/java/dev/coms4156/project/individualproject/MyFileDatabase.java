@@ -14,6 +14,9 @@ import java.util.Map;
  */
 public class MyFileDatabase {
 
+  private int mode;
+  private boolean initialized = false;
+  private boolean saved = false;
   /**
    * Constructs a MyFileDatabase object and loads up the data structure with
    * the contents of the file.
@@ -26,6 +29,7 @@ public class MyFileDatabase {
     if (flag == 0) {
       this.departmentMapping = deSerializeObjectFromFile();
     }
+    initialized = true;
   }
 
   /**
@@ -63,6 +67,7 @@ public class MyFileDatabase {
   public void saveContentsToFile() {
     try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
       out.writeObject(departmentMapping);
+      saved = true;
       System.out.println("Object serialized successfully.");
     } catch (IOException e) {
       e.printStackTrace();
@@ -76,6 +81,43 @@ public class MyFileDatabase {
    */
   public HashMap<String, Department> getDepartmentMapping() {
     return this.departmentMapping;
+  }
+
+  /**
+   * Retrieves a department by its code.
+   *
+   * @param deptCode the department code to retrieve
+   * @return the department with the given code, or null if not found
+   */
+  public Department getDepartment(String deptCode) {
+    return this.departmentMapping.get(deptCode);
+  }
+
+  /**
+   * Returns whether the database is initialized.
+   *
+   * @return true if initialized, false otherwise
+   */
+  public boolean isInitialized() {
+    return initialized;
+  }
+
+  /**
+   * Returns whether the database has been saved.
+   *
+   * @return true if saved, false otherwise
+   */
+  public boolean isSaved() {
+    return saved;
+  }
+
+  /**
+   * Returns the mode of the database (setup or normal).
+   *
+   * @return the mode of the database
+   */
+  public int getMode() {
+    return mode;
   }
 
   /**

@@ -68,6 +68,9 @@ public class Course implements Serializable {
     return this.courseTimeSlot;
   }
 
+  public int getEnrolledStudentCount() {
+    return this.enrolledStudentCount;
+  }
 
   public String toString() {
     return "\nInstructor: " + instructorName +  "; Location: "
@@ -96,13 +99,13 @@ public class Course implements Serializable {
 
 
   public boolean isCourseFull() {
-    return enrollmentCapacity > enrolledStudentCount;
+    return enrollmentCapacity <= enrolledStudentCount;
   }
 
   @Serial
   private static final long serialVersionUID = 123456L;
-  private final int enrollmentCapacity;
-  private int enrolledStudentCount;
+  public final int enrollmentCapacity;
+  public int enrolledStudentCount;
   private String courseLocation;
   private String instructorName;
   private String courseTimeSlot;

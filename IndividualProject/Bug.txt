@@ -1,0 +1,11 @@
+Bug and improves:
+
+Course:
+isCourseFull function should be return enrollmentCapacity <= enrolledStudentCount;
+
+Department:
+toString: improved to provide more information
+
+RouteController:
+addMajorToDept can't handle the null Department. Fixed by adding a handler.
+retrieveDepartment also has same problem. Fixed by adding Null and Empty Check. And I improved Error Handling for that function.

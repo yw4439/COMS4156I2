@@ -104,6 +104,12 @@ public class Department implements Serializable {
    */
   public String toString() {
     StringBuilder result = new StringBuilder();
+
+    result.append("Department Code: ").append(deptCode)
+            .append(", Chair: ").append(departmentChair)
+            .append(", Number of Majors: ").append(numberOfMajors)
+            .append("\nCourses:\n");
+
     for (Map.Entry<String, Course> entry : courses.entrySet()) {
       String key = entry.getKey();
       Course value = entry.getValue();
