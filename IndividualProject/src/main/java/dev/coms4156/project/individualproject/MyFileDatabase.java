@@ -17,6 +17,7 @@ public class MyFileDatabase {
   private int mode;
   private boolean initialized = false;
   private boolean saved = false;
+
   /**
    * Constructs a MyFileDatabase object and loads up the data structure with
    * the contents of the file.
@@ -24,6 +25,7 @@ public class MyFileDatabase {
    * @param flag     used to distinguish mode of database
    * @param filePath the path to the file containing the entries of the database
    */
+
   public MyFileDatabase(int flag, String filePath) {
     this.filePath = filePath;
     if (flag == 0) {

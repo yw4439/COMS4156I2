@@ -7,5 +7,11 @@ Department:
 toString: improved to provide more information
 
 RouteController:
-addMajorToDept can't handle the null Department. Fixed by adding a handler.
-retrieveDepartment also has same problem. Fixed by adding Null and Empty Check. And I improved Error Handling for that function.
+Give every function in the class an update so they could handle null problems. (like null department)
+findCourseTime when course find should return it time slot rather "some time"
+
+IndividualProjectApplication:
+All thing stay the same as asked
+
+P.S. Some of the bug was fixed without noted
+Fixed during first two steps and noticed that we need mark them down here :(
