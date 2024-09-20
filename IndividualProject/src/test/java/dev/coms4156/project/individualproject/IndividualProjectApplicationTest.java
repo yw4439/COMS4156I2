@@ -5,12 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -69,4 +70,26 @@ public class IndividualProjectApplicationTest {
     assertSame(mockDatabase, IndividualProjectApplication.myFileDatabase,
             "The myFileDatabase should be overridden by the mockDatabase.");
   }
+
+  @Test
+  public void testOnTerminationWithSaveData() throws Exception {
+    Field saveDataField = IndividualProjectApplication.class.getDeclaredField("saveData");
+    saveDataField.setAccessible(true);
+    saveDataField.set(null, true);
+    doNothing().when(mockDatabase).saveContentsToFile();
+
+    app.onTermination();
+    verify(mockDatabase, times(1)).saveContentsToFile();
+  }
+
+  @Test
+  public void testOnTerminationWithoutSaveData() throws Exception {
+    Field saveDataField = IndividualProjectApplication.class.getDeclaredField("saveData");
+    saveDataField.setAccessible(true);
+    saveDataField.set(null, false);
+
+    app.onTermination();
+    verify(mockDatabase, never()).saveContentsToFile();
+  }
+
 }

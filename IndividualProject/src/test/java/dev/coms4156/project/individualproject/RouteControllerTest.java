@@ -1,6 +1,7 @@
 package dev.coms4156.project.individualproject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -451,5 +452,37 @@ public class RouteControllerTest {
     assertEquals(HttpStatus.OK, response.getStatusCode(), "Status should be OK.");
     assertTrue(response.getBody().toString().contains("An Error has occurred"),
             "Response should contain error message.");
+  }
+
+  /*New test for I2*/
+  @Test
+  public void testRetrieveCourses() {
+    // Set up departments with courses
+    HashMap<String, Course> csCourses = new HashMap<>();
+    csCourses.put("1004", new Course("Adam Cannon", "417 IAB",
+            "11:40-12:55", 400));
+    HashMap<String, Course> econCourses = new HashMap<>();
+    econCourses.put("1004", new Course("Waseem Noor", "309 HAV",
+            "4:10-5:25", 250));
+    Department csDept = new Department("COMS", csCourses,
+            "Adam Cannon", 3000);
+    Department econDept = new Department("ECON", econCourses,
+            "Waseem Noor", 2500);
+    HashMap<String, Department> departmentMapping = new HashMap<>();
+    departmentMapping.put("COMS", csDept);
+    departmentMapping.put("ECON", econDept);
+    when(mockDatabase.getDepartmentMapping()).thenReturn(departmentMapping);
+
+    ResponseEntity<?> response = routeController.retrieveCourses("1004");
+    assertEquals(HttpStatus.OK, response.getStatusCode(), "Status should be OK.");
+    String responseBody = response.getBody().toString();
+    assertTrue(responseBody.contains("COMS 1004"),
+            "Response should contain CS 1004 course.");
+    assertTrue(responseBody.contains("ECON 1004"),
+            "Response should contain Economics 1004 course.");
+    assertFalse(responseBody.contains("COMS 1005"),
+            "Response should not contain wrong course.");
+    assertFalse(responseBody.contains("PHYS 1004"),
+            "Response should not Physics 1004 course.");
   }
 }

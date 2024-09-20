@@ -125,4 +125,9 @@ public class Department implements Serializable {
   private String departmentChair;
   private String deptCode;
   private int numberOfMajors;
+
+  /*Add new feature to get department code*/
+  public String getDeptCode() {
+    return this.deptCode;
+  }
 }

@@ -673,5 +673,50 @@ public class RouteController {
     return new ResponseEntity<>("An Error has occurred", HttpStatus.OK);
   }
 
+  /*New stuff for I2*/
+  /**
+   * Attempt to get courses information
+   * This method search all the course in each department to track all the course
+   * that has same course code as given.
+   *
+   * @param courseCode    The code of the course to change the location for.
+   *
+   * @return              A {@code ResponseEntity} with a success message if the course is found,
+   *                        or an error message if the course is not found.
+   */
+  @GetMapping(value = "/retrieveCourses", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> retrieveCourses(@RequestParam(value = "courseCode")
+                                             String courseCode) {
+
+    StringBuilder result = new StringBuilder();
+
+    try {
+      // Get the department mapping from the database
+      HashMap<String, Department> departmentMapping =
+              IndividualProjectApplication.myFileDatabase.getDepartmentMapping();
+      // If no department found we do not need courseFound
+      boolean courseFound = false;
+
+      // Loop through all the department
+      for (Department dept : departmentMapping.values()) {
+        if (dept.getCourseSelection().containsKey(courseCode)) {
+          Course course = dept.getCourseSelection().get(courseCode);
+          result.append(dept.getDeptCode()).append(" ").append(courseCode).append(": ")
+                  .append(course.toString()).append("\n");
+          courseFound = true;
+        }
+      }
+
+      if (!courseFound) {
+        return new ResponseEntity<>("No course found with code: "
+                + courseCode, HttpStatus.NOT_FOUND);
+      }
+      return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+
+    } catch (Exception e) {
+      return handleException(e);
+    }
+  }
+
 
 }
