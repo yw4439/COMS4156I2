@@ -43,7 +43,9 @@ public class IndividualProjectApplication implements CommandLineRunner {
         return;
       }
     }
-    myFileDatabase = new MyFileDatabase(0, "./data.txt");
+    if (myFileDatabase == null) {
+      myFileDatabase = new MyFileDatabase(0, "./data.txt");
+    }
     System.out.println("Start up");
   }
 
@@ -291,8 +293,10 @@ public class IndividualProjectApplication implements CommandLineRunner {
   @PreDestroy
   public void onTermination() {
     System.out.println("Termination");
-    if (saveData) {
+    if (myFileDatabase != null && saveData) {
       myFileDatabase.saveContentsToFile();
+    } else {
+      System.err.println("myFileDatabase is null. Skipping save.");
     }
   }
 

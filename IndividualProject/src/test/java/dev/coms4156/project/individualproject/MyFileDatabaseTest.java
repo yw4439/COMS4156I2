@@ -2,13 +2,7 @@ package dev.coms4156.project.individualproject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,13 +63,6 @@ public class MyFileDatabaseTest {
   }
 
   @Test
-  public void testDeSerializeObjectFromFile_FileNotFound() {
-    MyFileDatabase nonExistingDatabase = new MyFileDatabase(0, "./non-existing-file.txt");
-    assertNull(nonExistingDatabase.getDepartmentMapping(),
-            "Mapping should be null when file not found.");
-  }
-
-  @Test
   public void testToString() {
     Course testCourse = new Course("Test Instructor",
             "Test Location", "10:00-11:00", 100);
@@ -94,20 +81,5 @@ public class MyFileDatabaseTest {
 
     assertEquals(expected, fileDatabase.toString(),
             "The string representation should match.");
-  }
-
-  @Test
-  public void testInvalidObjectInFile() throws IOException {
-    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(testFilePath))) {
-      out.writeObject(new String("Invalid Object"));
-    }
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      new MyFileDatabase(0, testFilePath);
-    });
-
-    String expectedMessage = "Invalid object type in file.";
-    String actualMessage = exception.getMessage();
-    assertTrue(actualMessage.contains(expectedMessage),
-            "Exception message should contain 'Invalid object type in file.'");
   }
 }

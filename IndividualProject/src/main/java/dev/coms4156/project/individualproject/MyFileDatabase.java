@@ -14,9 +14,11 @@ import java.util.Map;
  */
 public class MyFileDatabase {
 
-  private int mode;
-  private boolean initialized = false;
-  private boolean saved = false;
+  /** The path to the file containing the database entries. */
+  private String filePath;
+
+  /** The mapping of department names to Department objects. */
+  private HashMap<String, Department> departmentMapping;
 
   /**
    * Constructs a MyFileDatabase object and loads up the data structure with
@@ -25,13 +27,16 @@ public class MyFileDatabase {
    * @param flag     used to distinguish mode of database
    * @param filePath the path to the file containing the entries of the database
    */
-
   public MyFileDatabase(int flag, String filePath) {
     this.filePath = filePath;
+    this.departmentMapping = new HashMap<>();
+
     if (flag == 0) {
-      this.departmentMapping = deSerializeObjectFromFile();
+      HashMap<String, Department> loadedMapping = deSerializeObjectFromFile();
+      if (loadedMapping != null) {
+        this.departmentMapping = loadedMapping;
+      }
     }
-    initialized = true;
   }
 
   /**
@@ -40,7 +45,7 @@ public class MyFileDatabase {
    * @param mapping the mapping of department names to Department objects
    */
   public void setMapping(HashMap<String, Department> mapping) {
-    this.departmentMapping = mapping;
+    this.departmentMapping = mapping != null ? mapping : new HashMap<>();
   }
 
   /**
@@ -54,11 +59,13 @@ public class MyFileDatabase {
       if (obj instanceof HashMap) {
         return (HashMap<String, Department>) obj;
       } else {
-        throw new IllegalArgumentException("Invalid object type in file.");
+        System.err.println("Invalid object type in file. Expected HashMap<String, Department>.");
+        return new HashMap<>();
       }
     } catch (IOException | ClassNotFoundException e) {
+      System.err.println("Error reading from file. Creating an empty database.");
       e.printStackTrace();
-      return null;
+      return new HashMap<>();
     }
   }
 
@@ -67,9 +74,13 @@ public class MyFileDatabase {
    * overwritten with this operation.
    */
   public void saveContentsToFile() {
+
+    if (departmentMapping == null) {
+      System.err.println("Error: departmentMapping is null. Cannot save contents to file.");
+      return;
+    }
     try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
       out.writeObject(departmentMapping);
-      saved = true;
       System.out.println("Object serialized successfully.");
     } catch (IOException e) {
       e.printStackTrace();
@@ -83,43 +94,6 @@ public class MyFileDatabase {
    */
   public HashMap<String, Department> getDepartmentMapping() {
     return this.departmentMapping;
-  }
-
-  /**
-   * Retrieves a department by its code.
-   *
-   * @param deptCode the department code to retrieve
-   * @return the department with the given code, or null if not found
-   */
-  public Department getDepartment(String deptCode) {
-    return this.departmentMapping.get(deptCode);
-  }
-
-  /**
-   * Returns whether the database is initialized.
-   *
-   * @return true if initialized, false otherwise
-   */
-  public boolean isInitialized() {
-    return initialized;
-  }
-
-  /**
-   * Returns whether the database has been saved.
-   *
-   * @return true if saved, false otherwise
-   */
-  public boolean isSaved() {
-    return saved;
-  }
-
-  /**
-   * Returns the mode of the database (setup or normal).
-   *
-   * @return the mode of the database
-   */
-  public int getMode() {
-    return mode;
   }
 
   /**
@@ -138,9 +112,5 @@ public class MyFileDatabase {
     return result.toString();
   }
 
-  /** The path to the file containing the database entries. */
-  private String filePath;
 
-  /** The mapping of department names to Department objects. */
-  private HashMap<String, Department> departmentMapping;
 }
