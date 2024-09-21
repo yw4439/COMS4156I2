@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -484,5 +485,25 @@ public class RouteControllerTest {
             "Response should not contain wrong course.");
     assertFalse(responseBody.contains("PHYS 1004"),
             "Response should not Physics 1004 course.");
+  }
+
+  @Test
+  public void testEnrollStudentInCourse_Success() {
+    // Set up course for valid enrollment
+    Course course = spy(new Course("Adam Cannon",
+            "417 IAB", "11:40-12:55", 250));
+    course.setEnrolledStudentCount(200);
+
+    Department csDept = new Department("COMS",
+            new HashMap<>(), "Adam Cannon", 1000);
+    csDept.getCourseSelection().put("1001", course);
+
+    HashMap<String, Department> departmentMapping = new HashMap<>();
+    departmentMapping.put("COMS", csDept);
+
+    when(mockDatabase.getDepartmentMapping()).thenReturn(departmentMapping);
+
+    ResponseEntity<?> response = routeController.enrollStudentInCourse("COMS", "1001");
+    assertEquals(HttpStatus.OK, response.getStatusCode(), "Status should be OK.");
   }
 }

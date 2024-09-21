@@ -627,11 +627,9 @@ public class RouteController {
    * If the course exists, its location will be set to the provided value.
    *
    * @param deptCode      The code of the department containing the course.
-   *
    * @param courseCode    The code of the course to change the location for.
-   *
    * @param location      The new location for the course.
-   *                      mvn checkstyle:check
+   *
    * @return              A {@code ResponseEntity} with a success message if the operation is
    *                      successful, or an error message if the course is not found.
    */
@@ -679,7 +677,7 @@ public class RouteController {
    * This method search all the course in each department to track all the course
    * that has same course code as given.
    *
-   * @param courseCode    The code of the course to change the location for.
+   * @param courseCode    The code of the course we want to find.
    *
    * @return              A {@code ResponseEntity} with a success message if the course is found,
    *                        or an error message if the course is not found.
@@ -712,6 +710,45 @@ public class RouteController {
                 + courseCode, HttpStatus.NOT_FOUND);
       }
       return new ResponseEntity<>(result.toString(), HttpStatus.OK);
+
+    } catch (Exception e) {
+      return handleException(e);
+    }
+  }
+
+
+  /**
+   * Attempt to add a student to specific course.
+   * This method use existed methods to try to add a student to a specific course.
+   *
+   * @param deptCode      The code of the department containing the course.
+   * @param courseCode    The code of the course want to add student.
+   *
+   * @return              A {@code ResponseEntity} with a success message if the course is found,
+   *                        or an error message if the course is not found.
+   */
+  @PatchMapping(value = "/enrollStudentInCourse", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> enrollStudentInCourse(@RequestParam(value = "deptCode") String deptCode,
+                                                 @RequestParam(value = "courseCode")
+                                                 String courseCode) {
+
+    try {
+      // Use existing retrieveCourse method to get the course
+      ResponseEntity<?> courseResponse = retrieveCourse(deptCode, Integer.parseInt(courseCode));
+      // Check if course exist in the department
+      if (courseResponse.getStatusCode() != HttpStatus.OK) {
+        return courseResponse;
+      }
+      Course course = (Course) courseResponse.getBody();
+
+      // Use existing isCourseFull method to check if course is full
+      if (course.isCourseFull()) {
+        return new ResponseEntity<>("Course is full", HttpStatus.FORBIDDEN);
+      }
+
+      // Everything good, we enroll the student
+      course.setEnrolledStudentCount(course.getEnrolledStudentCount() + 1);
+      return new ResponseEntity<>("Student enrolled successfully", HttpStatus.OK);
 
     } catch (Exception e) {
       return handleException(e);
