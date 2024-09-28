@@ -1,0 +1,5 @@
+## Citation list:
+
+1. Read me file from griffinnewbold, https://github.com/griffinnewbold/COMS-4156-Service/blob/main/README.md?plain=1
+
+2. How to build a CI/CD pipeline with GitHub Actions in four simple steps, https://github.blog/enterprise-software/ci-cd/build-ci-cd-pipeline-github-actions-four-steps/
